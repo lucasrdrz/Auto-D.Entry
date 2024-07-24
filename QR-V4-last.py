@@ -11,6 +11,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
 pip.main(["install", "openpyxl"])
+pip.main(["install", "qrcode"])
 
 # Función para generar el código QR
 def generate_qr(data):
