@@ -1,4 +1,9 @@
 pandas
 streamlit
-fsspec
 qrcode
+openpyxl
+opencv-python-headless
+pyzbar
+numpy
+google-api-python-client
+google-auth
