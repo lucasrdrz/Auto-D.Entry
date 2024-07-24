@@ -7,4 +7,5 @@ pyzbar
 numpy
 google-api-python-client
 google-auth
-pyzbar
+google-auth-oauthlib
+google-auth-httplib2
