@@ -4,6 +4,7 @@ from io import BytesIO
 from openpyxl import load_workbook
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+import os
 
 # Función para leer el archivo de Excel y cargarlo en un DataFrame
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
@@ -22,11 +23,24 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     return output, df
 
 # Configurar las credenciales y el servicio de la API de Google Sheets
-SERVICE_ACCOUNT_FILE = "key.json"
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('sheets', 'v4', credentials=credentials)
+try:
+    SERVICE_ACCOUNT_FILE = './key.json'
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    credentials = service_account.Credentials.from_service_account_file(
+        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    service = build('sheets', 'v4', credentials=credentials)
+except FileNotFoundError:
+    st.error("El archivo de credenciales no se encontró. Por favor, sube el archivo 'key.json'.")
+    uploaded_key_file = st.file_uploader('Sube tu archivo de credenciales JSON', type=['json'])
+    if uploaded_key_file:
+        with open('key.json', 'wb') as f:
+            f.write(uploaded_key_file.getvalue())
+        st.success("Archivo de credenciales subido con éxito. Recarga la página para continuar.")
+        st.stop()
+except Exception as e:
+    st.error(f"Error al configurar las credenciales: {e}")
+    st.stop()
+
 SPREADSHEET_ID = '1uC3qyYAmThXMfJ9Pwkompbf9Zs6MWhuTqT8jTVLYdr0'
 
 def get_last_row(sheet_id, sheet_name, column='B'):
@@ -108,13 +122,16 @@ if uploaded_file is not None:
 
                     # Llamada a la API para insertar los valores
                     for value, range_name in zip(values, ranges.values()):
-                        result = service.spreadsheets().values().update(
-                            spreadsheetId=SPREADSHEET_ID,
-                            range=range_name,
-                            valueInputOption='USER_ENTERED',
-                            body={'values': [value]}
-                        ).execute()
-                        st.write(f"Datos insertados correctamente en {range_name}. {result.get('updatedCells')} celdas actualizadas.")
+                        try:
+                            result = service.spreadsheets().values().update(
+                                spreadsheetId=SPREADSHEET_ID,
+                                range=range_name,
+                                valueInputOption='USER_ENTERED',
+                                body={'values': [value]}
+                            ).execute()
+                            st.write(f"Datos insertados correctamente en {range_name}. {result.get('updatedCells')} celdas actualizadas.")
+                        except Exception as e:
+                            st.write(f"Error al insertar los datos en {range_name}: {e}")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
 
