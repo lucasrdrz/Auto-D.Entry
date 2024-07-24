@@ -1,0 +1,4 @@
+pandas
+streamlit
+fsspec
+qrcode
