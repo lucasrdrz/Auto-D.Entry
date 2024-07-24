@@ -10,9 +10,6 @@ import numpy as np
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 
-pip.main(["install", "openpyxl"])
-
-
 # Función para generar el código QR
 def generate_qr(data):
     qr = qrcode.QRCode(
@@ -168,4 +165,5 @@ if uploaded_file is not None:
                         st.write(f"Datos insertados correctamente en {range_name}. {result.get('updatedCells')} celdas actualizadas.")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
+
 
