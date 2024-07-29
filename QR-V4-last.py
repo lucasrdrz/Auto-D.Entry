@@ -6,6 +6,8 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import os
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './key.json'
+
 # Función para leer el archivo de Excel y cargarlo en un DataFrame
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     df = pd.read_excel(file, sheet_name=sheet_name, usecols=usecols, nrows=nrows)
