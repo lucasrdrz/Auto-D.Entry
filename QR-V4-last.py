@@ -27,7 +27,7 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
 # Configurar las credenciales y el servicio de la API de Google Sheets
 def load_credentials():
     try:
-        SERVICE_ACCOUNT_FILE = './key.json'
+        SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
         credentials = service_account.Credentials.from_service_account_file(
             SERVICE_ACCOUNT_FILE, scopes=SCOPES)
