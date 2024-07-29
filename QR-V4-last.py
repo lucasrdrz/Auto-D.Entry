@@ -23,29 +23,31 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     return output, df
 
 # Configurar las credenciales y el servicio de la API de Google Sheets
-try:
-    SERVICE_ACCOUNT_FILE = 'key.json'
-    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    service = build('sheets', 'v4', credentials=credentials)
-except FileNotFoundError:
-    st.error("El archivo de credenciales no se encontró. Por favor, sube el archivo 'key.json'.")
-    uploaded_key_file = st.file_uploader('Sube tu archivo de credenciales JSON', type=['json'])
-    if uploaded_key_file:
-        with open('key.json', 'wb') as f:
-            f.write(uploaded_key_file.getvalue())
-        st.success("Archivo de credenciales subido con éxito. Recarga la página para continuar.")
+def load_credentials():
+    try:
+        SERVICE_ACCOUNT_FILE = './key.json'
+        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        return build('sheets', 'v4', credentials=credentials)
+    except FileNotFoundError:
+        st.error("El archivo de credenciales no se encontró. Por favor, sube el archivo 'key.json'.")
+        uploaded_key_file = st.file_uploader('Sube tu archivo de credenciales JSON', type=['json'])
+        if uploaded_key_file:
+            with open('key.json', 'wb') as f:
+                f.write(uploaded_key_file.getvalue())
+            st.success("Archivo de credenciales subido con éxito. Recarga la página para continuar.")
+            st.stop()
+    except Exception as e:
+        st.error(f"Error al configurar las credenciales: {e}")
         st.stop()
-except Exception as e:
-    st.error(f"Error al configurar las credenciales: {e}")
-    st.stop()
+
+service = load_credentials()
 
 SPREADSHEET_ID = '1uC3qyYAmThXMfJ9Pwkompbf9Zs6MWhuTqT8jTVLYdr0'
 
 def get_last_row(sheet_id, sheet_name, column='B'):
     try:
-        # Leer los valores de la columna especificada
         result = service.spreadsheets().values().get(
             spreadsheetId=sheet_id,
             range=f"'{sheet_name}'!{column}:{column}"
@@ -70,10 +72,8 @@ if uploaded_file is not None:
     if st.button('Mostrar Información'):
         processed_file, df = process_file(uploaded_file, sheet_name, usecols, nrows)
 
-        # Guardar el DataFrame en session_state
         st.session_state.df = df
 
-        # Mostrar la información del DataFrame
         st.write('Datos del archivo Excel:')
         st.dataframe(df)
 
@@ -84,34 +84,29 @@ if uploaded_file is not None:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-    # Agregar un botón para cargar datos en Google Sheet
     if 'df' in st.session_state and st.button('Cargar datos en Google Sheet'):
         df = st.session_state.df
 
-        # Extraer los valores específicos del DataFrame
-        ticket_2 = df['TICKET'][2]  # Valor en la posición 2 PAQ
-        tecnico_5 = df['DESCRIPCION'][5]  # Valor en la posición 5 DESCRIPCION
+        ticket_2 = df['TICKET'][2]
+        tecnico_5 = df['DESCRIPCION'][5]
 
         for i in range(9, 23):
             numero_de_parte = df['NUMERO DE PARTE'][i] if i < len(df['NUMERO DE PARTE']) else ""
             ticket_9 = df['TICKET'][i] if i < len(df['TICKET']) else ""
             cantidad = df['CANT.'][i] if i < len(df['CANT.']) else ""
 
-            # Verificar si todos los valores están completos
             if numero_de_parte and ticket_9 and cantidad:
-                # Obtener la última fila con datos y comenzar desde ahí
-                last_row = get_last_row(SPREADSHEET_ID, "Sheet1")  # Cambiar a "Sheet1"
+                last_row = get_last_row(SPREADSHEET_ID, "Sheet1")
 
                 if last_row:
                     ranges = {
-                        'NUMERO DE PARTE': f'B{last_row}',  # Ajusta la celda según sea necesario
-                        'TICKET_9': f'H{last_row}',         # Ajusta la celda según sea necesario
-                        'CANTIDAD': f'I{last_row}',         # Ajusta la celda según sea necesario
-                        'TICKET_2': f'G{last_row}',         # Ajusta la celda según sea necesario
-                        'TECNICO': f'E{last_row}'           # Ajusta la celda según sea necesario
+                        'NUMERO DE PARTE': f'B{last_row}',
+                        'TICKET_9': f'H{last_row}',
+                        'CANTIDAD': f'I{last_row}',
+                        'TICKET_2': f'G{last_row}',
+                        'TECNICO': f'E{last_row}'
                     }
 
-                    # Preparar los valores en el formato adecuado
                     values = [
                         [numero_de_parte],
                         [ticket_9],
@@ -120,7 +115,6 @@ if uploaded_file is not None:
                         [tecnico_5]
                     ]
 
-                    # Llamada a la API para insertar los valores
                     for value, range_name in zip(values, ranges.values()):
                         try:
                             result = service.spreadsheets().values().update(
@@ -134,5 +128,6 @@ if uploaded_file is not None:
                             st.write(f"Error al insertar los datos en {range_name}: {e}")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
+
 
 
