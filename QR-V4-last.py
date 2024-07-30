@@ -27,6 +27,8 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
 def load_credentials():
     try:
         SERVICE_ACCOUNT_INFO = os.getenv('GCP_KEY_JSON')
+        if SERVICE_ACCOUNT_INFO is None:
+            raise ValueError("La variable de entorno GCP_KEY_JSON no está configurada")
         info = json.loads(SERVICE_ACCOUNT_INFO)
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
         credentials = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
@@ -121,6 +123,7 @@ if uploaded_file is not None:
                             st.write(f"Error al insertar los datos en {range_name}: {e}")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
+
 
 
 
