@@ -28,4 +28,4 @@ jobs:
         GCP_KEY_JSON: ${{ secrets.GCP_KEY_JSON }}
       run: |
         echo "$GCP_KEY_JSON" > key.json
-        python your_script.py
+        python QR-V4-last.py
