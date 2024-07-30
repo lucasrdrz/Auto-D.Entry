@@ -27,5 +27,5 @@ jobs:
       env:
         GCP_KEY_JSON: ${{ secrets.GCP_KEY_JSON }}
       run: |
-        echo "$TEST_JSON" > key.json
+        echo "$GCP_KEY_JSON" > key.json
         python your_script.py
