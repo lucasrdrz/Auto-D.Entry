@@ -7,8 +7,6 @@ from google.oauth2 import service_account
 import os
 import json
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './key.json'
-
 # Función para leer el archivo de Excel y cargarlo en un DataFrame
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     df = pd.read_excel(file, sheet_name=sheet_name, usecols=usecols, nrows=nrows)
@@ -28,19 +26,11 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
 # Configurar las credenciales y el servicio de la API de Google Sheets
 def load_credentials():
     try:
-        SERVICE_ACCOUNT_FILE = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        SERVICE_ACCOUNT_INFO = os.getenv('GCP_KEY_JSON')
+        info = json.loads(SERVICE_ACCOUNT_INFO)
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        credentials = service_account.Credentials.from_service_account_file(
-            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        credentials = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
         return build('sheets', 'v4', credentials=credentials)
-    except FileNotFoundError:
-        st.error("El archivo de credenciales no se encontró. Por favor, sube el archivo 'key.json'.")
-        uploaded_key_file = st.file_uploader('Sube tu archivo de credenciales JSON', type=['json'])
-        if uploaded_key_file:
-            with open('key.json', 'wb') as f:
-                f.write(uploaded_key_file.getvalue())
-            st.success("Archivo de credenciales subido con éxito. Recarga la página para continuar.")
-            st.stop()
     except Exception as e:
         st.error(f"Error al configurar las credenciales: {e}")
         st.stop()
