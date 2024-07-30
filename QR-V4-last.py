@@ -4,7 +4,6 @@ from io import BytesIO
 from openpyxl import load_workbook
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-import os
 import json
 
 # Función para leer el archivo de Excel y cargarlo en un DataFrame
@@ -26,9 +25,7 @@ def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
 # Configurar las credenciales y el servicio de la API de Google Sheets
 def load_credentials():
     try:
-        SERVICE_ACCOUNT_INFO = os.getenv('GCP_KEY_JSON')
-        if SERVICE_ACCOUNT_INFO is None:
-            raise ValueError("La variable de entorno GCP_KEY_JSON no está configurada")
+        SERVICE_ACCOUNT_INFO = st.secrets["GCP_KEY_JSON"]
         info = json.loads(SERVICE_ACCOUNT_INFO)
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
         credentials = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
@@ -123,8 +120,5 @@ if uploaded_file is not None:
                             st.write(f"Error al insertar los datos en {range_name}: {e}")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
-
-
-
 
 
