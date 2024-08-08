@@ -81,6 +81,7 @@ if uploaded_file is not None:
 
         ticket_2 = df['TICKET'][2]
         tecnico_5 = df['DESCRIPCION'][5]
+        descripcion_49 = df['DESCRIPCION'][27]
 
         for i in range(9, 23):
             numero_de_parte = df['NUMERO DE PARTE'][i] if i < len(df['NUMERO DE PARTE']) else ""
@@ -96,7 +97,8 @@ if uploaded_file is not None:
                         'TICKET_9': f'H{last_row}',
                         'CANTIDAD': f'I{last_row}',
                         'TICKET_2': f'G{last_row}',
-                        'TECNICO': f'E{last_row}'
+                        'TECNICO': f'E{last_row}',
+                        'DESCRIPCION_49': f'K{last_row}' 
                     }
 
                     values = [
@@ -104,7 +106,8 @@ if uploaded_file is not None:
                         [ticket_9],
                         [cantidad],
                         [ticket_2],
-                        [tecnico_5]
+                        [tecnico_5],
+                        [descripcion_49]
                     ]
 
                     for value, range_name in zip(values, ranges.values()):
