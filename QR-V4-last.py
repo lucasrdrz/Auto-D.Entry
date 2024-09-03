@@ -82,6 +82,7 @@ if uploaded_file is not None:
         ticket_2 = df['TICKET'][2]
         tecnico_5 = df['DESCRIPCION'][5]
         descripcion_49 = df['DESCRIPCION'][27]
+        nombre_carga = df["CANT."][1]  # Agregando Nombre_Carga
 
         for i in range(9, 23):
             numero_de_parte = df['NUMERO DE PARTE'][i] if i < len(df['NUMERO DE PARTE']) else ""
@@ -98,7 +99,8 @@ if uploaded_file is not None:
                         'CANTIDAD': f'I{last_row}',
                         'TICKET_2': f'G{last_row}',
                         'TECNICO': f'E{last_row}',
-                        'DESCRIPCION_49': f'K{last_row}' 
+                        'DESCRIPCION_49': f'K{last_row}',
+                        'Nombre_Carga': f'L{last_row}'  # Nueva columna para Nombre_Carga
                     }
 
                     values = [
@@ -107,7 +109,8 @@ if uploaded_file is not None:
                         [cantidad],
                         [ticket_2],
                         [tecnico_5],
-                        [descripcion_49]
+                        [descripcion_49],
+                        [nombre_carga]  # Valor para la nueva columna Nombre_Carga
                     ]
 
                     for value, range_name in zip(values, ranges.values()):
@@ -123,5 +126,3 @@ if uploaded_file is not None:
                             st.write(f"Error al insertar los datos en {range_name}: {e}")
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitiendo.")
-
-
