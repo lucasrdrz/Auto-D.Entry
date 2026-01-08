@@ -6,33 +6,29 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import json
 
-# =========================
-# Procesar archivo Excel
-# =========================
+# Función para leer el archivo de Excel y cargarlo en un DataFrame
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     df = pd.read_excel(file, sheet_name=sheet_name, usecols=usecols, nrows=nrows)
     df = df.fillna('')
 
+    # Cargar el archivo de Excel usando openpyxl
     wb = load_workbook(file)
-    wb[sheet_name]
+    ws = wb[sheet_name]
 
+    # Guardar el archivo modificado en un BytesIO
     output = BytesIO()
     wb.save(output)
     output.seek(0)
 
     return output, df
 
-# =========================
-# Google Sheets credentials
-# =========================
+# Configurar las credenciales y el servicio de la API de Google Sheets
 def load_credentials():
     try:
         SERVICE_ACCOUNT_INFO = st.secrets["GCP_KEY_JSON"]
         info = json.loads(SERVICE_ACCOUNT_INFO)
         SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-        credentials = service_account.Credentials.from_service_account_info(
-            info, scopes=SCOPES
-        )
+        credentials = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
         return build('sheets', 'v4', credentials=credentials)
     except Exception as e:
         st.error(f"Error al configurar las credenciales: {e}")
@@ -145,5 +141,6 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
