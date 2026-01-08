@@ -37,7 +37,6 @@ def load_credentials():
 service = load_credentials()
 
 SPREADSHEET_ID = '1uC3qyYAmThXMfJ9Pwkompbf9Zs6MWhuTqT8jTVLYdr0'
-
 # =========================
 # Obtener última fila
 # =========================
@@ -141,6 +140,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
