@@ -122,8 +122,8 @@ if uploaded_file is not None:
                     'CANTIDAD': f'I{last_row}',
                     'TICKET_2': f'G{last_row}',
                     'TECNICO': f'E{last_row}',
-                    'DESCRIPCION_CONCAT': f'K{last_row}',
-                    'Nombre_Carga': f'L{last_row}'
+                    'DESCRIPCION_CONCAT': f'J{last_row}',
+                    'Nombre_Carga': f'K{last_row}'
                 }
 
                 values = [
@@ -145,6 +145,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
