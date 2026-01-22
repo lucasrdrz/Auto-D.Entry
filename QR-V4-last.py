@@ -9,20 +9,31 @@ import json
 # =========================
 # Procesar archivo Excel
 # =========================
-def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
-    file.seek(0)  # 🔴 volver al inicio
+def process_file(file, sheet_name=None, nrows=28):
     file.seek(0)
-    df = pd.read_excel(file, sheet_name=sheet_name, nrows=nrows)
-    df = df.iloc[:, 0:4]  # en vez de usecols="A:D"
-    df = df.fillna('')
 
-    # Crear un Excel limpio desde el DataFrame (NO desde el original)
+    # Abrir el Excel para ver hojas disponibles
+    xls = pd.ExcelFile(file, engine='openpyxl')
+
+    if sheet_name not in xls.sheet_names:
+        sheet_name = xls.sheet_names[0]  # usar la primera hoja si no existe
+
+    df = pd.read_excel(
+        xls,
+        sheet_name=sheet_name,
+        nrows=nrows,
+        engine='openpyxl'
+    )
+
+    df = df.fillna('')
+    df = df.iloc[:, :4]
+
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name=sheet_name)
 
     output.seek(0)
-    return output, df
+    return output, df, xls.sheet_names
 
 # =========================
 # Google Sheets credentials
@@ -147,6 +158,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
