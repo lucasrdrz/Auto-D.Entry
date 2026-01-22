@@ -81,13 +81,11 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
     sheet_name = st.text_input('Nombre de la hoja', value='backup')
-    usecols = st.text_input('Columnas a leer (ej. A:D)', value='A:D')
     nrows = st.number_input('Número de filas a leer', min_value=1, value=28)
 
     if st.button('Mostrar Información'):
-        processed_file, df = process_file(
-            uploaded_file, sheet_name, usecols, nrows
-        )
+        processed_file, df, sheet_names = process_file(
+        uploaded_file, sheet_name, nrows)
         st.session_state.df = df
 
         st.subheader('Datos del archivo Excel')
@@ -158,6 +156,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
