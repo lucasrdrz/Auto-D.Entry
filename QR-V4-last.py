@@ -92,7 +92,7 @@ if uploaded_file is not None:
         st.session_state.df = df
 
         st.subheader('Datos del archivo Excel')
-        st.dataframe(df)
+        st.write(pd.DataFrame(df))
 
         st.download_button(
             label="Descargar archivo",
@@ -159,6 +159,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
