@@ -86,6 +86,9 @@ if uploaded_file is not None:
     if st.button('Mostrar Información'):
         processed_file, df, sheet_names = process_file(
         uploaded_file, sheet_name, nrows)
+    
+
+        df = df.astype(str)  # 🔴 acá
         st.session_state.df = df
 
         st.subheader('Datos del archivo Excel')
@@ -156,6 +159,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
