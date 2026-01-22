@@ -10,16 +10,16 @@ import json
 # Procesar archivo Excel
 # =========================
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
+    file.seek(0)  # 🔴 volver al inicio
     df = pd.read_excel(file, sheet_name=sheet_name, usecols=usecols, nrows=nrows)
     df = df.fillna('')
 
-    wb = load_workbook(file)
-    wb[sheet_name]
-
+    # Crear un Excel limpio desde el DataFrame (NO desde el original)
     output = BytesIO()
-    wb.save(output)
-    output.seek(0)
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name=sheet_name)
 
+    output.seek(0)
     return output, df
 
 # =========================
@@ -145,6 +145,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
