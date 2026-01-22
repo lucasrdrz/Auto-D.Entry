@@ -11,7 +11,9 @@ import json
 # =========================
 def process_file(file, sheet_name='backup', usecols="A:D", nrows=28):
     file.seek(0)  # 🔴 volver al inicio
-    df = pd.read_excel(file, sheet_name=sheet_name, usecols=usecols, nrows=nrows)
+    file.seek(0)
+    df = pd.read_excel(file, sheet_name=sheet_name, nrows=nrows)
+    df = df.iloc[:, 0:4]  # en vez de usecols="A:D"
     df = df.fillna('')
 
     # Crear un Excel limpio desde el DataFrame (NO desde el original)
@@ -145,6 +147,7 @@ if uploaded_file is not None:
                     ).execute()
             else:
                 st.write(f"Fila {i + 1}: datos incompletos, omitida.")
+
 
 
 
